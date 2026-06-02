@@ -26,9 +26,13 @@
             android:exported="false" />
 
         <activity 
-        android:name=".TenantMainActivity" 
-        android:exported="false" />
+            android:name=".TenantMainActivity" 
+            android:exported="false" />
 
+
+        <activity 
+            android:name=".ContractActivity" 
+            android:exported="false" />
     </application>
     
 

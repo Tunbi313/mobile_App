@@ -47,7 +47,7 @@ class TenantMainActivity : AppCompatActivity() {
         // Bottom Navigation
         navHome.setOnClickListener { /* Đang ở trang chủ */ }
         navManage.setOnClickListener {
-            // TODO: startActivity(Intent(this, ManageActivity::class.java))
+            startActivity(Intent(this, ContractActivity::class.java))
         }
         navNotify.setOnClickListener {
             // TODO: startActivity(Intent(this, NotifyActivity::class.java))
