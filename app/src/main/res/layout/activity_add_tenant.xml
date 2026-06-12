@@ -1,0 +1,484 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_screen">
+
+    <!-- ===== TOP APP BAR ===== -->
+    <RelativeLayout
+        android:id="@+id/headerTopBar"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:background="@color/white"
+        android:elevation="2dp"
+        android:layout_alignParentTop="true">
+
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
+            android:src="@drawable/ic_arrow_back"
+            android:contentDescription="Quay lại"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="6dp"
+            android:tint="#1D1B20" />
+
+        <TextView
+            android:id="@+id/txtHeaderTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/btnBack"
+            android:layout_marginStart="12dp"
+            android:text="Nhận phòng: Phòng 102"
+            android:textColor="#000F64"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+        <!-- User profile icon in header -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="16dp"
+            app:cardCornerRadius="16dp"
+            app:cardBackgroundColor="#000F64"
+            app:cardElevation="0dp">
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_user"
+                android:tint="@color/white"
+                android:contentDescription="Profile" />
+        </androidx.cardview.widget.CardView>
+    </RelativeLayout>
+
+    <!-- ===== FIXED BOTTOM BUTTON AREA ===== -->
+    <RelativeLayout
+        android:id="@+id/bottomButtonArea"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:background="#F5F6FA"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
+        android:layout_alignParentBottom="true">
+
+        <LinearLayout
+            android:id="@+id/btnCreateContract"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:background="@drawable/bg_button_pill_navy"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_person_add"
+                android:tint="@color/white"
+                android:layout_marginEnd="8dp"
+                android:contentDescription="Tạo hợp đồng icon" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tạo hợp đồng"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <!-- ===== SCROLLABLE CONTENT ===== -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:layout_below="@id/headerTopBar"
+        android:layout_above="@id/bottomButtonArea">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Card 1: Thông tin người thuê -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="8dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <!-- Left blue vertical accent bar -->
+                    <View
+                        android:layout_width="4dp"
+                        android:layout_height="match_parent"
+                        android:background="#000F64" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <!-- Card Header -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="20dp">
+
+                            <ImageView
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:src="@drawable/ic_user"
+                                android:tint="#000F64"
+                                android:contentDescription="User Icon" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:text="Thông tin người thuê"
+                                android:textColor="#000F64"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <!-- Input: Họ và tên -->
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="14dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="52dp"
+                                android:layout_marginTop="8dp"
+                                android:background="@drawable/bg_input_outline"
+                                android:gravity="center_vertical">
+
+                                <Spinner
+                                    android:id="@+id/spinnerTenantName"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:background="@null"
+                                    android:paddingStart="16dp"
+                                    android:paddingEnd="16dp" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="12dp"
+                                android:background="@color/white"
+                                android:paddingStart="4dp"
+                                android:paddingEnd="4dp"
+                                android:text="Họ và tên"
+                                android:textColor="@color/text_hint"
+                                android:textSize="11sp" />
+                        </RelativeLayout>
+
+                        <!-- Input: Số điện thoại -->
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="14dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="52dp"
+                                android:layout_marginTop="8dp"
+                                android:background="@drawable/bg_input_outline"
+                                android:gravity="center_vertical">
+
+                                <EditText
+                                    android:id="@+id/etTenantPhone"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:background="@null"
+                                    android:paddingStart="16dp"
+                                    android:paddingEnd="16dp"
+                                    android:text="0901234567"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="14sp"
+                                    android:inputType="phone"
+                                    android:singleLine="true" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="12dp"
+                                android:background="@color/white"
+                                android:paddingStart="4dp"
+                                android:paddingEnd="4dp"
+                                android:text="Số điện thoại"
+                                android:textColor="@color/text_hint"
+                                android:textSize="11sp" />
+                        </RelativeLayout>
+
+                        <!-- Input: CCCD / CMND -->
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="4dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="52dp"
+                                android:layout_marginTop="8dp"
+                                android:background="@drawable/bg_input_outline"
+                                android:gravity="center_vertical">
+
+                                <EditText
+                                    android:id="@+id/etTenantIdCard"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:background="@null"
+                                    android:paddingStart="16dp"
+                                    android:paddingEnd="16dp"
+                                    android:text="079123456789"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="14sp"
+                                    android:inputType="number"
+                                    android:singleLine="true" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="12dp"
+                                android:background="@color/white"
+                                android:paddingStart="4dp"
+                                android:paddingEnd="4dp"
+                                android:text="CCCD / CMND"
+                                android:textColor="@color/text_hint"
+                                android:textSize="11sp" />
+                        </RelativeLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Card 2: Thông tin hợp đồng -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="8dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <!-- Left green vertical accent bar -->
+                    <View
+                        android:layout_width="4dp"
+                        android:layout_height="match_parent"
+                        android:background="#22C55E" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <!-- Card Header -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginBottom="20dp">
+
+                            <ImageView
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:src="@drawable/ic_document"
+                                android:tint="#22C55E"
+                                android:contentDescription="Contract Icon" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:text="Thông tin hợp đồng"
+                                android:textColor="#22C55E"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <!-- Input: Ngày bắt đầu -->
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="14dp">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="52dp"
+                                android:layout_marginTop="8dp"
+                                android:background="@drawable/bg_input_outline">
+
+                                <EditText
+                                    android:id="@+id/etStartDate"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:background="@null"
+                                    android:paddingStart="16dp"
+                                    android:paddingEnd="44dp"
+                                    android:text="05/01/2024"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="14sp"
+                                    android:focusable="false"
+                                    android:clickable="true" />
+
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginEnd="12dp"
+                                    android:src="@drawable/ic_calendar"
+                                    android:tint="#555555"
+                                    android:contentDescription="Calendar Icon" />
+                            </RelativeLayout>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="12dp"
+                                android:background="@color/white"
+                                android:paddingStart="4dp"
+                                android:paddingEnd="4dp"
+                                android:text="Ngày bắt đầu"
+                                android:textColor="@color/text_hint"
+                                android:textSize="11sp" />
+                        </RelativeLayout>
+
+                        <!-- Input: Tiền cọc (VNĐ) -->
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="14dp">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="52dp"
+                                android:layout_marginTop="8dp"
+                                android:background="@drawable/bg_input_outline">
+
+                                <EditText
+                                    android:id="@+id/etDepositPrice"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:background="@null"
+                                    android:paddingStart="16dp"
+                                    android:paddingEnd="44dp"
+                                    android:text="3.000.000"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="14sp"
+                                    android:inputType="number" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginEnd="16dp"
+                                    android:text="đ"
+                                    android:textColor="#555555"
+                                    android:textSize="14sp"
+                                    android:textStyle="bold" />
+                            </RelativeLayout>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="12dp"
+                                android:background="@color/white"
+                                android:paddingStart="4dp"
+                                android:paddingEnd="4dp"
+                                android:text="Tiền cọc (VNĐ)"
+                                android:textColor="@color/text_hint"
+                                android:textSize="11sp" />
+                        </RelativeLayout>
+
+                        <!-- Input: Thời hạn hợp đồng -->
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="4dp">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="52dp"
+                                android:layout_marginTop="8dp"
+                                android:background="@drawable/bg_input_outline">
+
+                                <EditText
+                                    android:id="@+id/etContractDuration"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:background="@null"
+                                    android:paddingStart="16dp"
+                                    android:paddingEnd="44dp"
+                                    android:text="12"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="14sp"
+                                    android:inputType="number"
+                                    android:singleLine="true" />
+
+                                <ImageView
+                                    android:layout_width="24dp"
+                                    android:layout_height="24dp"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginEnd="12dp"
+                                    android:src="@drawable/ic_arrow_drop_down"
+                                    android:tint="#555555"
+                                    android:contentDescription="Dropdown Icon" />
+                            </RelativeLayout>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="12dp"
+                                android:background="@color/white"
+                                android:paddingStart="4dp"
+                                android:paddingEnd="4dp"
+                                android:text="Thời hạn hợp đồng (Tháng)"
+                                android:textColor="@color/text_hint"
+                                android:textSize="11sp" />
+                        </RelativeLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</RelativeLayout>
