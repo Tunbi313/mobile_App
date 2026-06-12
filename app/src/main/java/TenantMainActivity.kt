@@ -23,7 +23,7 @@ class TenantMainActivity : AppCompatActivity() {
 
         // Thanh toán ngay
         btnPayNow.setOnClickListener {
-            // TODO: Mở màn hình thanh toán
+            startActivity(Intent(this, PaymentNotificationActivity::class.java))
         }
 
         // Nhắn tin cho chủ nhà
@@ -50,10 +50,10 @@ class TenantMainActivity : AppCompatActivity() {
             startActivity(Intent(this, ContractActivity::class.java))
         }
         navNotify.setOnClickListener {
-            // TODO: startActivity(Intent(this, NotifyActivity::class.java))
+            startActivity(Intent(this, NotificationActivity::class.java))
         }
         navSettings.setOnClickListener {
-            // TODO: startActivity(Intent(this, SettingsActivity::class.java))
+            startActivity(Intent(this, SettingsActivity::class.java))
         }
     }
 }

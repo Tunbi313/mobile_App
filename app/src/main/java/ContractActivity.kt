@@ -50,10 +50,12 @@ class ContractActivity : AppCompatActivity() {
             // Đang ở màn này rồi, không cần làm gì
         }
         navNotify.setOnClickListener {
-            // TODO: startActivity(Intent(this, NotifyActivity::class.java))
+            startActivity(Intent(this, NotificationActivity::class.java))
+            finish()
         }
         navSettings.setOnClickListener {
-            // TODO: startActivity(Intent(this, SettingsActivity::class.java))
+            startActivity(Intent(this, SettingsActivity::class.java))
+            finish()
         }
     }
 }
