@@ -2,6 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Quyền Internet -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -10,7 +15,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.QuanLyPhongTro">
+        android:theme="@style/Theme.QuanLyPhongTro"
+        android:usesCleartextTraffic="true">
 
         <activity
             android:name=".LoginActivity"
@@ -25,10 +31,9 @@
             android:name=".RegisterActivity"
             android:exported="false" />
 
-        <activity 
-            android:name=".TenantMainActivity" 
+        <activity
+            android:name=".TenantMainActivity"
             android:exported="false" />
-
 
         <activity
             android:name=".ContractActivity"
@@ -45,7 +50,15 @@
         <activity
             android:name=".SettingsActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".RoomListingActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".RoomDetailActivity"
+            android:exported="false" />
+
     </application>
-    
 
 </manifest>

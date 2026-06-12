@@ -9,7 +9,13 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-
+data class RegisterRequest(
+    val username: String,
+    val password: String,
+    val phone :String,
+    val fullname : String ,
+    val email:  String
+)
 class RegisterActivity : AppCompatActivity() {
 
     private var isPasswordVisible = false

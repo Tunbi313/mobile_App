@@ -9,6 +9,10 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class LoginActivity : AppCompatActivity() {
 
@@ -52,16 +56,33 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // TODO: Gọi API đăng nhập ở đây
-            // Sau khi đăng nhập thành công:
-            startActivity(Intent(this, TenantMainActivity::class.java))
-            finish()
+            btnLogin.isEnabled = false
+            btnLogin.text = "Đang đăng nhập..."
+
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    val response = RetrofitClient.instance.login(
+                        LoginRequest(username, password)
+                    )
+                    withContext(Dispatchers.Main) {
+                        TokenManager(this@LoginActivity).saveToken(response.access)
+                        startActivity(Intent(this@LoginActivity, TenantMainActivity::class.java))
+                        finish()
+                    }
+                } catch (e: Exception) {
+                    withContext(Dispatchers.Main) {
+                        btnLogin.isEnabled = true
+                        btnLogin.text = "Đăng nhập →"
+                        etPassword.error = "Sai tài khoản hoặc mật khẩu"
+                    }
+                }
+            }
         }
 
         // Nút đăng ký
         btnRegister.setOnClickListener {
-    startActivity(Intent(this, RegisterActivity::class.java))
-    }   
+            startActivity(Intent(this, RegisterActivity::class.java))
+        }
 
         // Quên mật khẩu
         tvForgotPassword.setOnClickListener {

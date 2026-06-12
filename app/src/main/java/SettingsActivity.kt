@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 
@@ -13,6 +14,9 @@ class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
+
+        val hasRoom = getSharedPreferences("app_prefs", MODE_PRIVATE)
+            .getBoolean("has_room", true)
 
         val btnChangePassword = findViewById<Button>(R.id.btnChangePassword)
         val btnSave = findViewById<Button>(R.id.btnSave)
@@ -53,21 +57,27 @@ class SettingsActivity : AppCompatActivity() {
                 .show()
         }
 
-        // Bottom Navigation
+        // Bottom Navigation — home/manage destination depends on user type
         navHome.setOnClickListener {
-            startActivity(Intent(this, TenantMainActivity::class.java))
+            if (hasRoom) {
+                startActivity(Intent(this, TenantMainActivity::class.java))
+            } else {
+                startActivity(Intent(this, RoomListingActivity::class.java))
+            }
             finish()
         }
         navManage.setOnClickListener {
-            startActivity(Intent(this, ContractActivity::class.java))
-            finish()
+            if (hasRoom) {
+                startActivity(Intent(this, ContractActivity::class.java))
+                finish()
+            } else {
+                Toast.makeText(this, "Bạn chưa thuê phòng nào", Toast.LENGTH_SHORT).show()
+            }
         }
         navNotify.setOnClickListener {
             startActivity(Intent(this, NotificationActivity::class.java))
             finish()
         }
-        navSettings.setOnClickListener {
-            // Đang ở màn này rồi
-        }
+        navSettings.setOnClickListener { /* Already on this screen */ }
     }
 }
