@@ -9,7 +9,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="80dp"
+        android:paddingBottom="100dp"
         android:clipToPadding="false">
 
         <LinearLayout
@@ -376,8 +376,6 @@
                             android:drawableStart="@drawable/ic_key"
                             android:drawableTint="@color/primary"
                             android:drawablePadding="8dp"
-                            android:paddingStart="32dp"
-                            android:paddingEnd="16dp"
                             android:layout_marginBottom="12dp" />
 
                         <!-- Nút Lưu thay đổi -->
@@ -393,9 +391,7 @@
                             android:background="@drawable/bg_button_primary"
                             android:drawableStart="@drawable/ic_save"
                             android:drawableTint="@color/white"
-                            android:drawablePadding="8dp"
-                            android:paddingStart="32dp"
-                            android:paddingEnd="16dp" />
+                            android:drawablePadding="8dp" />
 
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
@@ -405,7 +401,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:layout_marginBottom="8dp">
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="32dp">
 
                     <TextView
                         android:id="@+id/btnLogout"
@@ -470,13 +467,13 @@
             <ImageView
                 android:layout_width="22dp"
                 android:layout_height="22dp"
-                android:src="@drawable/img"
+                android:src="@drawable/ic_manage"
                 android:tint="@color/text_hint"
-                android:contentDescription="Hợp đồng" />
+                android:contentDescription="Quản lý" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Hợp đồng"
+                android:text="Quản lý"
                 android:textSize="10sp"
                 android:textColor="@color/text_hint"
                 android:layout_marginTop="2dp" />

@@ -4,51 +4,85 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class RoomDetailActivity : AppCompatActivity() {
+
+    private lateinit var tokenManager: TokenManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_room_detail)
 
-        val btnBack = findViewById<CardView>(R.id.btnBack)
+        tokenManager = TokenManager(this)
+
+        val btnBack    = findViewById<CardView>(R.id.btnBack)
         val btnContact = findViewById<Button>(R.id.btnContact)
         val btnMessage = findViewById<CardView>(R.id.btnMessage)
 
-        // Nhận data từ Intent
-        val roomName = intent.getStringExtra("room_name") ?: "Phòng 302"
-        val price = intent.getStringExtra("price") ?: "3.500.000 đ/tháng"
-        val area = intent.getStringExtra("area") ?: "20m2"
-        val capacity = intent.getStringExtra("capacity") ?: "3 người"
-        val floor = intent.getStringExtra("floor") ?: "Tầng 2"
-        val phone = intent.getStringExtra("phone") ?: "0901234567"
+        val tvRoomName = findViewById<TextView>(R.id.tvRoomName)
+        val tvPrice    = findViewById<TextView>(R.id.tvPrice)
+        val tvArea     = findViewById<TextView>(R.id.tvArea)
+        val tvCapacity = findViewById<TextView>(R.id.tvCapacity)
+        val tvFloor    = findViewById<TextView>(R.id.tvFloor)
 
-        // Set data
-        findViewById<android.widget.TextView>(R.id.tvRoomName).text = roomName
-        findViewById<android.widget.TextView>(R.id.tvPrice).text = price
-        findViewById<android.widget.TextView>(R.id.tvArea).text = area
-        findViewById<android.widget.TextView>(R.id.tvCapacity).text = capacity
-        findViewById<android.widget.TextView>(R.id.tvFloor).text = floor
+        // Data passed via Intent from RoomListingActivity
+        val roomId      = intent.getIntExtra("room_id", -1)
+        val roomName    = intent.getStringExtra("room_name") ?: "Phòng"
+        val priceStr    = intent.getStringExtra("price")    ?: ""
+        val areaStr     = intent.getStringExtra("area")     ?: ""
+        val capacityStr = intent.getStringExtra("capacity") ?: "2 người"
+        val floorStr    = intent.getStringExtra("floor")    ?: ""
+        val amenities   = intent.getStringExtra("amenities") ?: ""
+        val description = intent.getStringExtra("description") ?: ""
 
-        // Quay lại
-        btnBack.setOnClickListener { finish() }
+        // Populate from Intent (fast)
+        tvRoomName.text = roomName
+        tvPrice.text    = priceStr
+        tvArea.text     = areaStr
+        tvCapacity.text = capacityStr
+        tvFloor.text    = floorStr
 
-        // Gọi điện
-        btnContact.setOnClickListener {
-            val intent = Intent(Intent.ACTION_DIAL).apply {
-                data = Uri.parse("tel:$phone")
+        var contactPhone = "0901234567"
+
+        // If we have a roomId, refresh from API to get latest landlord phone
+        if (roomId != -1) {
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    val room = RetrofitClient.instance.getRoomDetail(tokenManager.getBearer(), roomId)
+                    withContext(Dispatchers.Main) {
+                        tvRoomName.text = room.name
+                        tvPrice.text    = "${formatMoney(room.price)}/tháng"
+                        tvArea.text     = "${room.area.toInt()} m²"
+                        tvCapacity.text = "${room.capacity ?: 2} người"
+                        tvFloor.text    = room.floor ?: ""
+                        // Landlord phone not in room detail for non-tenants; keep default
+                    }
+                } catch (_: Exception) {
+                    // Silently keep Intent data on error
+                }
             }
-            startActivity(intent)
         }
 
-        // Nhắn tin
+        btnBack.setOnClickListener { finish() }
+
+        btnContact.setOnClickListener {
+            startActivity(Intent(Intent.ACTION_DIAL).apply {
+                data = Uri.parse("tel:$contactPhone")
+            })
+        }
+
         btnMessage.setOnClickListener {
-            val intent = Intent(Intent.ACTION_SENDTO).apply {
-                data = Uri.parse("smsto:$phone")
-            }
-            startActivity(intent)
+            startActivity(Intent(Intent.ACTION_SENDTO).apply {
+                data = Uri.parse("smsto:$contactPhone")
+            })
         }
     }
 }
