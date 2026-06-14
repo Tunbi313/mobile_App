@@ -16,9 +16,11 @@ fun getLocalIpAddress(): String {
             val name = netInt.name.lowercase()
             val displayName = netInt.displayName.lowercase()
             
-            // Loại bỏ hoàn toàn card mạng ảo (VMware, VirtualBox, WSL, Hyper-V)
+            // Loại bỏ card mạng ảo (VMware, VirtualBox, WSL, Hyper-V, Docker)
             if (name.contains("vbox") || name.contains("vmnet") || name.contains("wsl") || name.contains("virtual") ||
-                displayName.contains("virtual") || displayName.contains("vmware") || displayName.contains("virtualbox") || displayName.contains("host-only") || displayName.contains("hyper-v")) {
+                name.contains("docker") || name.startsWith("br-") || name.startsWith("veth") ||
+                displayName.contains("virtual") || displayName.contains("vmware") || displayName.contains("virtualbox") ||
+                displayName.contains("host-only") || displayName.contains("hyper-v") || displayName.contains("docker")) {
                 continue
             }
             
