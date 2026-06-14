@@ -41,28 +41,14 @@
                     android:layout_marginEnd="12dp" />
 
                 <TextView
+                    android:id="@+id/tvContractTitle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Hợp đồng thuê phòng 101"
+                    android:text="Hợp đồng thuê phòng"
                     android:textSize="17sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_primary" />
-
-                <TextView
-                    android:id="@+id/btnComment"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Bình luận"
-                    android:textSize="12sp"
-                    android:textColor="@color/primary"
-                    android:background="@drawable/bg_badge_blue"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"
-                    android:paddingTop="5dp"
-                    android:paddingBottom="5dp"
-                    android:clickable="true"
-                    android:focusable="true" />
             </LinearLayout>
 
             <!-- ===== MAIN CONTENT ===== -->
@@ -79,17 +65,62 @@
                     app:cardCornerRadius="12dp"
                     app:cardBackgroundColor="@color/white"
                     app:cardElevation="2dp"
-                    android:layout_marginBottom="16dp">
+                    android:layout_marginBottom="8dp">
 
-                    <ImageView
-                        android:id="@+id/ivContractImage"
+                    <FrameLayout
                         android:layout_width="match_parent"
-                        android:layout_height="280dp"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/ic_house"
-                        android:contentDescription="Ảnh hợp đồng" />
+                        android:layout_height="280dp">
 
+                        <ImageView
+                            android:id="@+id/ivContractImage"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/ic_house"
+                            android:contentDescription="Ảnh hợp đồng" />
+
+                        <!-- Overlay upload hint -->
+                        <LinearLayout
+                            android:id="@+id/layoutUploadHint"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:background="#88000000"
+                            android:clickable="false"
+                            android:focusable="false">
+
+                            <ImageView
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:src="@drawable/ic_camera"
+                                android:tint="@color/white"
+                                android:contentDescription="Upload" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Nhấn để chọn ảnh hợp đồng"
+                                android:textColor="@color/white"
+                                android:textSize="13sp"
+                                android:layout_marginTop="8dp" />
+                        </LinearLayout>
+
+                    </FrameLayout>
                 </androidx.cardview.widget.CardView>
+
+                <!-- Nút upload ảnh hợp đồng -->
+                <Button
+                    android:id="@+id/btnUploadImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="46dp"
+                    android:text="Chọn ảnh hợp đồng"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/primary"
+                    android:textAllCaps="false"
+                    android:background="@drawable/bg_button_outline"
+                    android:layout_marginBottom="16dp" />
 
                 <!-- ===== THÔNG TIN CHI TIẾT HỢP ĐỒNG ===== -->
                 <androidx.cardview.widget.CardView
@@ -296,126 +327,5 @@
             android:src="@drawable/ic_download"
             android:contentDescription="Tải xuống" />
     </androidx.cardview.widget.CardView>
-
-    <!-- ===== BOTTOM NAVIGATION ===== -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:orientation="horizontal"
-        android:background="@color/white"
-        android:elevation="8dp"
-        android:layout_gravity="bottom"
-        android:weightSum="4">
-
-        <!-- Trang chủ -->
-        <LinearLayout
-            android:id="@+id/navHome"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:clickable="true"
-            android:focusable="true">
-
-            <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:src="@drawable/ic_house"
-                android:tint="@color/text_hint"
-                android:contentDescription="Trang chủ" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Trang chủ"
-                android:textSize="10sp"
-                android:textColor="@color/text_hint"
-                android:layout_marginTop="2dp" />
-        </LinearLayout>
-
-        <!-- Hợp đồng (ACTIVE) -->
-        <LinearLayout
-            android:id="@+id/navContract"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:background="@drawable/bg_nav_active"
-            android:clickable="true"
-            android:focusable="true">
-
-            <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:src="@drawable/img"
-                android:tint="@color/white"
-                android:contentDescription="Hợp đồng" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Hợp đồng"
-                android:textSize="10sp"
-                android:textColor="@color/white"
-                android:layout_marginTop="2dp" />
-        </LinearLayout>
-
-        <!-- Thông báo -->
-        <LinearLayout
-            android:id="@+id/navNotify"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:clickable="true"
-            android:focusable="true">
-
-            <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:src="@drawable/ic_bell"
-                android:tint="@color/text_hint"
-                android:contentDescription="Thông báo" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Thông báo"
-                android:textSize="10sp"
-                android:textColor="@color/text_hint"
-                android:layout_marginTop="2dp" />
-        </LinearLayout>
-
-        <!-- Cài đặt -->
-        <LinearLayout
-            android:id="@+id/navSettings"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:clickable="true"
-            android:focusable="true">
-
-            <ImageView
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:src="@drawable/ic_settings"
-                android:tint="@color/text_hint"
-                android:contentDescription="Cài đặt" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Cài đặt"
-                android:textSize="10sp"
-                android:textColor="@color/text_hint"
-                android:layout_marginTop="2dp" />
-        </LinearLayout>
-
-    </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

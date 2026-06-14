@@ -12,6 +12,12 @@ interface ApiService {
     @POST("auth/register/")
     suspend fun register(@Body body: RegisterRequest): Response<AuthResponse>
 
+    @POST("auth/logout/")
+    suspend fun logout(
+        @Header("Authorization") token: String,
+        @Body body: LogoutRequest
+    ): Response<MessageResponse>
+
     // ── Rooms ───────────────────────────────────────────────────
     @GET("api/rooms/")
     suspend fun getRooms(@Header("Authorization") token: String): Response<List<RoomResponse>>
@@ -26,6 +32,28 @@ interface ApiService {
     suspend fun getRoomDetail(
         @Header("Authorization") token: String,
         @Path("room_id") roomId: Int
+    ): Response<RoomResponse>
+
+    @GET("api/rooms/{room_id}/contract/")
+    suspend fun getRoomContract(
+        @Header("Authorization") token: String,
+        @Path("room_id") roomId: Int
+    ): Response<ContractData>
+
+    @Multipart
+    @POST("api/rooms/{room_id}/contract/upload-image/")
+    suspend fun uploadContractImage(
+        @Header("Authorization") token: String,
+        @Path("room_id") roomId: Int,
+        @Part image: okhttp3.MultipartBody.Part
+    ): Response<ContractData>
+
+    @Multipart
+    @POST("api/rooms/{room_id}/upload-image/")
+    suspend fun uploadRoomImage(
+        @Header("Authorization") token: String,
+        @Path("room_id") roomId: Int,
+        @Part image: okhttp3.MultipartBody.Part
     ): Response<RoomResponse>
 
     @PUT("api/rooms/{room_id}/")
@@ -46,4 +74,22 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Path("room_id") roomId: Int
     ): Response<Void>
+
+    // ── Payments ────────────────────────────────────────────────
+    @GET("api/invoices/pending-payments/")
+    suspend fun getPendingPayments(
+        @Header("Authorization") token: String
+    ): Response<List<PendingPaymentData>>
+
+    @POST("api/invoices/{invoice_id}/approve/")
+    suspend fun approvePayment(
+        @Header("Authorization") token: String,
+        @Path("invoice_id") invoiceId: Int
+    ): Response<MessageResponse>
+
+    @POST("api/invoices/{invoice_id}/reject/")
+    suspend fun rejectPayment(
+        @Header("Authorization") token: String,
+        @Path("invoice_id") invoiceId: Int
+    ): Response<MessageResponse>
 }

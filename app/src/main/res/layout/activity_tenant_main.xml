@@ -101,7 +101,7 @@
                 android:layout_marginTop="2dp" />
         </LinearLayout>
 
-        <!-- Quản lý -->
+        <!-- Hợp đồng -->
         <LinearLayout
             android:id="@+id/navManage"
             android:layout_width="0dp"

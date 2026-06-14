@@ -9,7 +9,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="100dp"
         android:background="@color/white"
         android:elevation="2dp"
         app:layout_constraintTop_toTopOf="parent">
@@ -140,136 +140,7 @@
                             android:padding="12dp" />
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <!-- Divider with label -->
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Dịch vụ (Giá/Đơn vị)"
-                        android:textColor="@color/gray_text"
-                        android:textSize="12sp"
-                        android:layout_marginTop="12dp"
-                        android:layout_marginBottom="12dp" />
 
-                    <!-- Điện row -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:layout_marginBottom="12dp">
-
-                        <!-- Icon Điện -->
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical">
-
-                            <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:src="@drawable/ic_lightning"
-                                app:tint="@color/navy_blue"
-                                android:layout_marginEnd="8dp" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Điện"
-                                android:textColor="@color/text_primary"
-                                android:textSize="14sp" />
-                        </LinearLayout>
-
-                        <!-- Giá Điện -->
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/tilElecPrice"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                            android:layout_width="110dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="8dp"
-                            app:boxStrokeColor="@color/navy_blue"
-                            app:hintEnabled="false">
-
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/etElecPrice"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:inputType="number"
-                                android:textColor="@color/text_primary"
-                                android:textSize="14sp"
-                                android:padding="10dp"
-                                android:hint="3.500" />
-                        </com.google.android.material.textfield.TextInputLayout>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="/kWh"
-                            android:textColor="@color/gray_text"
-                            android:textSize="13sp" />
-
-                    </LinearLayout>
-
-                    <!-- Nước row -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical">
-
-                        <!-- Icon Nước -->
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical">
-
-                            <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:src="@drawable/ic_water"
-                                app:tint="@color/navy_blue"
-                                android:layout_marginEnd="8dp" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Nước"
-                                android:textColor="@color/text_primary"
-                                android:textSize="14sp" />
-                        </LinearLayout>
-
-                        <!-- Giá Nước -->
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/tilWaterPrice"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                            android:layout_width="110dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="8dp"
-                            app:boxStrokeColor="@color/navy_blue"
-                            app:hintEnabled="false">
-
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/etWaterPrice"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:inputType="number"
-                                android:textColor="@color/text_primary"
-                                android:textSize="14sp"
-                                android:padding="10dp"
-                                android:hint="25.000" />
-                        </com.google.android.material.textfield.TextInputLayout>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="/Khối"
-                            android:textColor="@color/gray_text"
-                            android:textSize="13sp" />
-
-                    </LinearLayout>
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>

@@ -69,8 +69,8 @@ class AddTenantActivity : AppCompatActivity() {
             override fun onItemSelected(parent: AdapterView<*>?, view: android.view.View?, position: Int, id: Long) {
                 if (position > 0) {
                     val selectedUser = tenantList[position - 1]
-                    val phone = selectedUser.optString("phone", "")
-                    val idCard = selectedUser.optString("id_card", "")
+                    val phone  = if (selectedUser.isNull("phone"))   "" else selectedUser.optString("phone",   "")
+                    val idCard = if (selectedUser.isNull("id_card")) "" else selectedUser.optString("id_card", "")
 
                     etTenantPhone.setText(phone)
                     etTenantIdCard.setText(idCard)
@@ -82,8 +82,12 @@ class AddTenantActivity : AppCompatActivity() {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
-        // Lấy room_id từ Intent truyền sang (mặc định room_id = 1 nếu test độc lập)
-        val roomId = intent.getIntExtra("room_id", 1)
+        val roomId = intent.getIntExtra("ROOM_ID", -1)
+        if (roomId == -1) {
+            Toast.makeText(this, "Lỗi: Không tìm thấy ID phòng!", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
 
         // Date Picker cho ngày bắt đầu hợp đồng
         etStartDate.setOnClickListener {

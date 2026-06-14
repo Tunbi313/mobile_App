@@ -92,7 +92,8 @@ class UnitPriceActivity : AppCompatActivity() {
         }
 
         navNotify.setOnClickListener {
-            // Mở màn hình thông báo
+            startActivity(Intent(this, PaymentApprovalActivity::class.java))
+            finish()
         }
 
         navSettings.setOnClickListener {

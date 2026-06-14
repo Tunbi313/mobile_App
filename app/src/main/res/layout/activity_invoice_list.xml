@@ -19,7 +19,7 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="64dp"
+                android:layout_height="100dp"
                 android:background="@color/white"
                 android:paddingHorizontal="20dp">
 
@@ -375,9 +375,9 @@
 
             <ImageView
                 android:layout_width="22dp"
-                android:layout_height="22dp"
+                android:layout_height="21dp"
                 android:contentDescription="Quản lý"
-                android:src="@drawable/ic_manage"
+                android:src="@drawable/img"
                 android:tint="@color/white" />
 
             <TextView
@@ -401,16 +401,16 @@
             android:focusable="true">
 
             <ImageView
-                android:layout_width="22dp"
+                android:layout_width="wrap_content"
                 android:layout_height="22dp"
-                android:src="@drawable/ic_bell"
-                android:tint="@color/text_hint"
-                android:contentDescription="Thông báo" />
+                android:contentDescription="Thông báo"
+                android:src="@drawable/ic_revenue"
+                android:tint="@color/text_hint" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Thông báo"
+                android:text="Duyệt thanh toán"
                 android:textSize="10sp"
                 android:textColor="@color/text_hint"
                 android:layout_marginTop="2dp" />

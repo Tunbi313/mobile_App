@@ -37,8 +37,6 @@ class EditRoomActivity : AppCompatActivity() {
     private lateinit var btnBack: ImageView
     private lateinit var etRoomName: TextInputEditText
     private lateinit var etPrice: TextInputEditText
-    private lateinit var etElecPrice: TextInputEditText
-    private lateinit var etWaterPrice: TextInputEditText
 
     private lateinit var btnStatusAvailable: Button
     private lateinit var btnStatusOccupied: Button
@@ -75,8 +73,6 @@ class EditRoomActivity : AppCompatActivity() {
         btnBack             = findViewById(R.id.btnBack)
         etRoomName          = findViewById(R.id.etRoomName)
         etPrice             = findViewById(R.id.etPrice)
-        etElecPrice         = findViewById(R.id.etElecPrice)
-        etWaterPrice        = findViewById(R.id.etWaterPrice)
 
         btnStatusAvailable  = findViewById(R.id.btnStatusAvailable)
         btnStatusOccupied   = findViewById(R.id.btnStatusOccupied)

@@ -10,7 +10,7 @@
     <LinearLayout
         android:id="@+id/headerTopBar"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
+        android:layout_height="100dp"
         android:background="@color/white"
         android:orientation="horizontal"
         android:gravity="center_vertical"
@@ -79,7 +79,7 @@
                 android:layout_marginTop="2dp" />
         </LinearLayout>
 
-        <!-- Quản lý -->
+        <!-- Hợp đồng -->
         <LinearLayout
             android:id="@+id/navManage"
             android:layout_width="0dp"
@@ -92,9 +92,9 @@
 
             <ImageView
                 android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:contentDescription="Quản lý"
-                android:src="@drawable/ic_manage"
+                android:layout_height="21dp"
+                android:contentDescription="Hợp đồng"
+                android:src="@drawable/img"
                 android:tint="@color/text_hint" />
 
             <TextView
@@ -106,7 +106,6 @@
                 android:layout_marginTop="2dp" />
         </LinearLayout>
 
-        <!-- Thông báo -->
         <LinearLayout
             android:id="@+id/navNotify"
             android:layout_width="0dp"
@@ -118,16 +117,16 @@
             android:focusable="true">
 
             <ImageView
-                android:layout_width="22dp"
+                android:layout_width="wrap_content"
                 android:layout_height="22dp"
-                android:src="@drawable/ic_bell"
-                android:tint="@color/text_hint"
-                android:contentDescription="Thông báo" />
+                android:contentDescription="Thông báo"
+                android:src="@drawable/ic_revenue"
+                android:tint="@color/text_hint" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Thông báo"
+                android:text="Duyệt thanh toán"
                 android:textSize="10sp"
                 android:textColor="@color/text_hint"
                 android:layout_marginTop="2dp" />

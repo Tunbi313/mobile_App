@@ -2,8 +2,11 @@ package com.example.quanlyphongtro
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.LinearLayout
+import android.widget.NumberPicker
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,6 +19,11 @@ class InvoiceListActivity : AppCompatActivity() {
 
     private lateinit var session: SessionManager
     private lateinit var invoiceAdapter: InvoiceAdapter
+
+    private var selectedMonth      = Calendar.getInstance().get(Calendar.MONTH) + 1
+    private var selectedYear       = Calendar.getInstance().get(Calendar.YEAR)
+    private var selectedStatus     = "all" // "all" | "true" | "false"
+    private var isMonthFilterActive = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,94 +65,159 @@ class InvoiceListActivity : AppCompatActivity() {
     }
 
     private fun setupFilters() {
-        val month = Calendar.getInstance().get(Calendar.MONTH) + 1
-        findViewById<TextView>(R.id.tvMonthFilter).text = "Tháng $month"
+        updateMonthFilterText()
 
         findViewById<android.view.View>(R.id.btnMonthFilter).setOnClickListener {
-            Toast.makeText(this, "Chọn tháng", Toast.LENGTH_SHORT).show()
+            showMonthPicker()
         }
         findViewById<android.view.View>(R.id.btnFilter).setOnClickListener {
-            Toast.makeText(this, "Bộ lọc", Toast.LENGTH_SHORT).show()
+            showStatusFilter()
         }
     }
 
+    private fun updateMonthFilterText() {
+        val label = if (isMonthFilterActive) "Tháng $selectedMonth/$selectedYear" else "Tất cả tháng"
+        findViewById<TextView>(R.id.tvMonthFilter).text = label
+    }
+
+    private fun showMonthPicker() {
+        val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+
+        val monthPicker = NumberPicker(this).apply {
+            minValue = 1
+            maxValue = 12
+            value = selectedMonth
+            displayedValues = (1..12).map { "Tháng $it" }.toTypedArray()
+            wrapSelectorWheel = true
+        }
+
+        val yearPicker = NumberPicker(this).apply {
+            minValue = 2020
+            maxValue = currentYear + 1
+            value = selectedYear
+            wrapSelectorWheel = false
+        }
+
+        val container = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = android.view.Gravity.CENTER
+            setPadding(48, 32, 48, 16)
+        }
+        container.addView(monthPicker)
+        container.addView(yearPicker)
+
+        AlertDialog.Builder(this)
+            .setTitle("Chọn tháng")
+            .setView(container)
+            .setPositiveButton("Xem") { _, _ ->
+                selectedMonth       = monthPicker.value
+                selectedYear        = yearPicker.value
+                isMonthFilterActive = true
+                updateMonthFilterText()
+                loadInvoices()
+            }
+            .setNegativeButton("Huỷ", null)
+            .show()
+    }
+
+    private fun showStatusFilter() {
+        val options = arrayOf("Tất cả", "Đã thu", "Chưa thu")
+        val currentIndex = when (selectedStatus) {
+            "true"  -> 1
+            "false" -> 2
+            else    -> 0
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle("Lọc trạng thái")
+            .setSingleChoiceItems(options, currentIndex) { dialog, which ->
+                selectedStatus = when (which) {
+                    1    -> "true"
+                    2    -> "false"
+                    else -> "all"
+                }
+                dialog.dismiss()
+                loadInvoices()
+            }
+            .setNegativeButton("Huỷ", null)
+            .show()
+    }
+
+    private fun buildEndpoint(): String {
+        val params = mutableListOf<String>()
+        if (isMonthFilterActive) {
+            params.add("month=$selectedMonth")
+            params.add("year=$selectedYear")
+        }
+        if (selectedStatus != "all") params.add("is_paid=$selectedStatus")
+        return if (params.isEmpty()) "/api/invoices/" else "/api/invoices/?${params.joinToString("&")}"
+    }
+
     private fun setupBottomNav() {
-        // Tab Trang chủ → quay về OwnerMainActivity
         findViewById<android.view.View>(R.id.navHome).setOnClickListener {
             startActivity(Intent(this, OwnerMainActivity::class.java))
             finish()
         }
-        // Tab Quản lý → đang ở đây rồi, không làm gì
         findViewById<android.view.View>(R.id.navManage).setOnClickListener { /* đang ở đây */ }
-        // Tab Thông báo → hiển thị thông báo
         findViewById<android.view.View>(R.id.navNotify).setOnClickListener {
-            Toast.makeText(this, "Tính năng Thông báo đang phát triển", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, PaymentApprovalActivity::class.java))
+            finish()
         }
-        // Tab Cài đặt -> mở màn cài đặt đơn giá
         findViewById<android.view.View>(R.id.navSettings).setOnClickListener {
             startActivity(Intent(this, UnitPriceActivity::class.java))
         }
     }
 
     private fun loadInvoices() {
-        ApiClient.get(this, "/api/invoices/", object : ApiClient.ApiCallback {
+        ApiClient.get(this, buildEndpoint(), object : ApiClient.ApiCallback {
             override fun onSuccess(response: String) {
                 try {
                     val jsonArray = org.json.JSONArray(response)
                     val items = ArrayList<InvoiceItem>()
-                    var totalCollected = 0L
+                    var totalCollected   = 0L
                     var totalUncollected = 0L
-                    var countCollected = 0
+                    var countCollected   = 0
                     var countUncollected = 0
 
                     for (i in 0 until jsonArray.length()) {
-                        val obj = jsonArray.getJSONObject(i)
-                        val roomObj = obj.optJSONObject("room_details")
+                        val obj      = jsonArray.getJSONObject(i)
+                        val roomObj  = obj.optJSONObject("room_details")
                         val roomName = roomObj?.optString("name", "") ?: ""
                         val roomNumber = roomName.replace(Regex("[^0-9]"), "")
                         val tenantName = roomObj?.optString("tenant_name", "Khách thuê") ?: "Khách thuê"
                         val grandTotal = obj.optDouble("grand_total", 0.0).toLong()
-                        val isPaid = obj.optBoolean("is_paid", false)
-                        val month = obj.optInt("month", 0)
-                        val year = obj.optInt("year", 0)
+                        val isPaid     = obj.optBoolean("is_paid", false)
+                        val month      = obj.optInt("month", 0)
+                        val year       = obj.optInt("year", 0)
 
-                        val dateLabel = if (isPaid) {
-                            "Thanh toán: Tháng $month/$year"
-                        } else {
-                            "Chưa thu: Tháng $month/$year"
-                        }
+                        val dateLabel = if (isPaid) "Đã thu: Tháng $month/$year"
+                                        else        "Chưa thu: Tháng $month/$year"
 
                         items.add(
                             InvoiceItem(
                                 roomNumber = if (roomNumber.isNotEmpty()) roomNumber else roomName,
-                                roomName = roomName,
+                                roomName   = roomName,
                                 tenantName = tenantName,
-                                amount = grandTotal,
-                                isPaid = isPaid,
-                                dateLabel = dateLabel
+                                amount     = grandTotal,
+                                isPaid     = isPaid,
+                                dateLabel  = dateLabel
                             )
                         )
 
-                        if (isPaid) {
-                            totalCollected += grandTotal
-                            countCollected++
-                        } else {
-                            totalUncollected += grandTotal
-                            countUncollected++
-                        }
+                        if (isPaid) { totalCollected   += grandTotal; countCollected++ }
+                        else        { totalUncollected += grandTotal; countUncollected++ }
                     }
 
                     invoiceAdapter.updateInvoices(items)
 
                     val formatter = NumberFormat.getNumberInstance(Locale("vi", "VN"))
-                    findViewById<TextView>(R.id.tvTotalInvoices).text = jsonArray.length().toString()
-                    findViewById<TextView>(R.id.tvCollectedAmount).text = "${formatter.format(totalCollected)} đ"
-                    findViewById<TextView>(R.id.tvCollectedCount).text = "$countCollected hóa đơn"
-                    findViewById<TextView>(R.id.tvUncollectedAmount).text = "${formatter.format(totalUncollected)} đ"
-                    findViewById<TextView>(R.id.tvUncollectedCount).text = "$countUncollected hóa đơn"
+                    findViewById<TextView>(R.id.tvTotalInvoices).text      = jsonArray.length().toString()
+                    findViewById<TextView>(R.id.tvCollectedAmount).text    = "${formatter.format(totalCollected)} đ"
+                    findViewById<TextView>(R.id.tvCollectedCount).text     = "$countCollected hóa đơn"
+                    findViewById<TextView>(R.id.tvUncollectedAmount).text  = "${formatter.format(totalUncollected)} đ"
+                    findViewById<TextView>(R.id.tvUncollectedCount).text   = "$countUncollected hóa đơn"
 
                 } catch (e: Exception) {
-                    e.printStackTrace()
                     Toast.makeText(this@InvoiceListActivity, "Lỗi phân tích danh sách hóa đơn", Toast.LENGTH_SHORT).show()
                 }
             }

@@ -90,6 +90,7 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
     implementation("androidx.cardview:cardview:1.0.0")
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation("androidx.appcompat:appcompat:1.6.1")
 
     // Retrofit - gọi API
@@ -99,4 +100,10 @@ dependencies {
     // Coroutines - xử lý bất đồng bộ
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
+
+    // OkHttp - cần cho multipart upload
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
+    // Glide - load ảnh từ URL
+    implementation("com.github.bumptech.glide:glide:4.16.0")
 }

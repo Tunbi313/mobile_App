@@ -10,7 +10,7 @@
     <LinearLayout
         android:id="@+id/headerTopBar"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
+        android:layout_height="100dp"
         android:background="#E6E8EB"
         android:orientation="horizontal"
         android:gravity="center_vertical"

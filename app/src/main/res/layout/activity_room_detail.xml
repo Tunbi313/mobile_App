@@ -10,7 +10,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="100dp"
         android:background="@color/white"
         android:elevation="2dp"
         app:layout_constraintTop_toTopOf="parent">
@@ -86,6 +86,29 @@
                     android:textStyle="bold"
                     android:paddingHorizontal="12dp"
                     android:paddingVertical="6dp" />
+
+                <!-- Camera upload button (bottom-right) -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/btnUploadRoomImage"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:layout_gravity="bottom|end"
+                    android:layout_margin="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardCornerRadius="22dp"
+                    app:cardBackgroundColor="#CC000000"
+                    app:cardElevation="4dp">
+
+                    <ImageView
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_camera"
+                        android:tint="@color/white"
+                        android:contentDescription="Tải ảnh phòng" />
+
+                </androidx.cardview.widget.CardView>
 
             </FrameLayout>
 
@@ -601,7 +624,7 @@
 
                         <ImageView
                             android:layout_width="22dp"
-                            android:layout_height="22dp"
+                            android:layout_height="wrap_content"
                             android:src="@drawable/ic_invoice"
                             app:tint="@color/navy_blue" />
 

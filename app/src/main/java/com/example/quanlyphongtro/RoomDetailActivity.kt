@@ -10,14 +10,19 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import com.bumptech.glide.Glide
 import com.example.quanlyphongtro.network.RetrofitClient
 import com.example.quanlyphongtro.network.SessionManager
 import com.example.quanlyphongtro.network.RoomResponse
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -55,14 +60,22 @@ class RoomDetailActivity : AppCompatActivity() {
     private lateinit var btnContract: MaterialCardView
     private lateinit var btnInvoice: MaterialCardView
     private lateinit var fabEditRoom: FloatingActionButton
+    private lateinit var ivRoomImage: ImageView
+    private lateinit var btnUploadRoomImage: CardView
 
     private val editRoomLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == RESULT_OK) {
             isModified = true
-            loadRoomDetail()   // Reload dữ liệu sau khi chỉnh sửa
+            loadRoomDetail()
         }
+    }
+
+    private val pickImageLauncher = registerForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        if (uri != null) uploadRoomImage(uri)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -114,6 +127,8 @@ class RoomDetailActivity : AppCompatActivity() {
         btnContract          = findViewById(R.id.btnContract)
         btnInvoice           = findViewById(R.id.btnInvoice)
         fabEditRoom          = findViewById(R.id.fabEditRoom)
+        ivRoomImage          = findViewById(R.id.ivRoomImage)
+        btnUploadRoomImage   = findViewById(R.id.btnUploadRoomImage)
     }
 
     private fun setupListeners() {
@@ -126,6 +141,10 @@ class RoomDetailActivity : AppCompatActivity() {
                 putExtra("ROOM_ID", roomId)
             }
             editRoomLauncher.launch(intent)
+        }
+
+        btnUploadRoomImage.setOnClickListener {
+            pickImageLauncher.launch("image/*")
         }
     }
 
@@ -194,6 +213,15 @@ class RoomDetailActivity : AppCompatActivity() {
         tvTitle.text         = "Chi tiết ${room.name}"
         tvRoomNameLarge.text = room.name
 
+        // Ảnh phòng
+        if (!room.room_image_url.isNullOrEmpty()) {
+            Glide.with(this)
+                .load(room.room_image_url)
+                .placeholder(R.drawable.img_6)
+                .error(R.drawable.img_6)
+                .into(ivRoomImage)
+        }
+
         // Diện tích
         val areaStr = room.area.toLong().toString()
         tvAreaValue.text = "$areaStr m²"
@@ -259,10 +287,19 @@ class RoomDetailActivity : AppCompatActivity() {
 
         // ── Nút Hợp đồng / Hóa đơn ──────────────────────────────────
         btnContract.setOnClickListener {
-            val intent = Intent(this, AddTenantActivity::class.java).apply {
-                putExtra("room_id", room.id)
+            if (room.status == "occupied") {
+                startActivity(Intent(this, ContractActivity::class.java).apply {
+                    putExtra("ROOM_ID", room.id)
+                    putExtra("sign_date", room.move_in ?: "")
+                    putExtra("duration", "${room.duration_months ?: 12} tháng")
+                    putExtra("landlord_name", session.getDisplayName())
+                    putExtra("tenant_name", room.tenant_name ?: "")
+                })
+            } else {
+                startActivity(Intent(this, AddTenantActivity::class.java).apply {
+                    putExtra("ROOM_ID", room.id)
+                })
             }
-            startActivity(intent)
         }
         btnInvoice.setOnClickListener {
             Toast.makeText(this, "Hóa đơn phòng ${room.name}", Toast.LENGTH_SHORT).show()
@@ -304,6 +341,36 @@ class RoomDetailActivity : AppCompatActivity() {
                     ).apply { rightMargin = rightMarginPx }
                 }
                 layoutAmenities.addView(tv)
+            }
+        }
+    }
+
+    private fun uploadRoomImage(uri: Uri) {
+        lifecycleScope.launch {
+            try {
+                val bytes = contentResolver.openInputStream(uri)?.readBytes() ?: return@launch
+                val mimeType = contentResolver.getType(uri) ?: "image/jpeg"
+                val requestBody = bytes.toRequestBody(mimeType.toMediaTypeOrNull())
+                val part = MultipartBody.Part.createFormData(
+                    "room_image", "room_image.jpg", requestBody
+                )
+                val token = session.bearerToken()
+                val resp = RetrofitClient.api.uploadRoomImage(token, roomId, part)
+                if (resp.isSuccessful && resp.body() != null) {
+                    val url = resp.body()!!.room_image_url
+                    if (!url.isNullOrEmpty()) {
+                        Glide.with(this@RoomDetailActivity)
+                            .load(url)
+                            .placeholder(R.drawable.img_6)
+                            .error(R.drawable.img_6)
+                            .into(ivRoomImage)
+                    }
+                    Toast.makeText(this@RoomDetailActivity, "Tải ảnh lên thành công!", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this@RoomDetailActivity, "Tải ảnh thất bại (${resp.code()})", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(this@RoomDetailActivity, "Lỗi: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }

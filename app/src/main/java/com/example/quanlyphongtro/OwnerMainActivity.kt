@@ -6,10 +6,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.quanlyphongtro.network.LogoutRequest
 import com.example.quanlyphongtro.network.RetrofitClient
 import com.example.quanlyphongtro.network.SessionManager
 import com.example.quanlyphongtro.network.RoomResponse
@@ -49,22 +51,22 @@ class OwnerMainActivity : AppCompatActivity() {
 
         // Set tên Chủ trọ đăng nhập
         val tvOwnerName = findViewById<TextView>(R.id.tvOwnerName)
-        tvOwnerName.text = "Xin chào, ${session.getUsername() ?: "Chủ trọ"}"
+        tvOwnerName.text = "Xin chào, ${session.getDisplayName()}"
 
         // Xử lý nút Đăng xuất / Đổi vai trò
         val btnSwitchRole = findViewById<android.view.View>(R.id.btnSwitchRole)
         val cardAvatar = findViewById<android.view.View>(R.id.cardAvatar)
 
-        val logoutAction = {
-            session.clearSession()
-            val intent = Intent(this, LoginActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
-            finish()
-            Toast.makeText(this, "Đã đăng xuất", Toast.LENGTH_SHORT).show()
+        val showLogoutDialog = {
+            AlertDialog.Builder(this)
+                .setTitle("Đăng xuất")
+                .setMessage("Bạn có chắc muốn đăng xuất không?")
+                .setPositiveButton("Đăng xuất") { _, _ -> doLogout() }
+                .setNegativeButton("Huỷ", null)
+                .show()
         }
-        btnSwitchRole.setOnClickListener { logoutAction() }
-        cardAvatar.setOnClickListener { logoutAction() }
+        btnSwitchRole.setOnClickListener { showLogoutDialog() }
+        cardAvatar.setOnClickListener   { showLogoutDialog() }
 
         // Setup RecyclerView
         val rvRooms = findViewById<RecyclerView>(R.id.rvRooms)
@@ -90,7 +92,7 @@ class OwnerMainActivity : AppCompatActivity() {
             startActivity(Intent(this, InvoiceListActivity::class.java))
         }
         findViewById<android.view.View>(R.id.navNotify).setOnClickListener {
-            android.widget.Toast.makeText(this, "Tính năng Thông báo", android.widget.Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, PaymentApprovalActivity::class.java))
         }
         // Tab Cài đặt → mở màn cài đặt đơn giá
         findViewById<android.view.View>(R.id.navSettings).setOnClickListener {
@@ -99,6 +101,21 @@ class OwnerMainActivity : AppCompatActivity() {
 
         // Tải danh sách phòng từ database
         loadRoomsData()
+    }
+
+    private fun doLogout() {
+        val refreshToken = session.getRefreshToken()
+        lifecycleScope.launch {
+            try {
+                if (refreshToken != null) {
+                    RetrofitClient.api.logout(session.bearerToken(), LogoutRequest(refreshToken))
+                }
+            } catch (_: Exception) { }
+            session.clearSession()
+            val intent = Intent(this@OwnerMainActivity, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+        }
     }
 
     private fun loadRoomsData() {

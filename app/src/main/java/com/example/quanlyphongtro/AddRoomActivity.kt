@@ -1,25 +1,35 @@
 package com.example.quanlyphongtro
 
+import android.net.Uri
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.bumptech.glide.Glide
 import com.example.quanlyphongtro.network.RetrofitClient
 import com.example.quanlyphongtro.network.RoomRequest
 import com.example.quanlyphongtro.network.SessionManager
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
 
 class AddRoomActivity : AppCompatActivity() {
 
     private lateinit var session: SessionManager
     private var roomId: Int = -1
     private var isEditMode = false
+    private var selectedImageUri: Uri? = null
 
     private lateinit var tvTitle: TextView
     private lateinit var etRoomName: EditText
@@ -31,6 +41,19 @@ class AddRoomActivity : AppCompatActivity() {
     private lateinit var etDescription: EditText
     private lateinit var btnSubmit: Button
     private lateinit var btnBack: ImageView
+    private lateinit var frameRoomImage: FrameLayout
+    private lateinit var ivRoomImagePreview: ImageView
+    private lateinit var layoutImagePlaceholder: LinearLayout
+
+    private val pickImageLauncher = registerForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            selectedImageUri = uri
+            layoutImagePlaceholder.visibility = View.GONE
+            Glide.with(this).load(uri).centerCrop().into(ivRoomImagePreview)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,16 +62,21 @@ class AddRoomActivity : AppCompatActivity() {
         session = SessionManager(this)
 
         // Ánh xạ views
-        tvTitle = findViewById(R.id.tvTitle)
-        etRoomName = findViewById(R.id.etRoomName)
-        etPrice = findViewById(R.id.etPrice)
-        etArea = findViewById(R.id.etArea)
-        rgStatus = findViewById(R.id.rgStatus)
-        rbAvailable = findViewById(R.id.rbAvailable)
-        rbOccupied = findViewById(R.id.rbOccupied)
-        etDescription = findViewById(R.id.etDescription)
-        btnSubmit = findViewById(R.id.btnSubmit)
-        btnBack = findViewById(R.id.btnBack)
+        tvTitle               = findViewById(R.id.tvTitle)
+        etRoomName            = findViewById(R.id.etRoomName)
+        etPrice               = findViewById(R.id.etPrice)
+        etArea                = findViewById(R.id.etArea)
+        rgStatus              = findViewById(R.id.rgStatus)
+        rbAvailable           = findViewById(R.id.rbAvailable)
+        rbOccupied            = findViewById(R.id.rbOccupied)
+        etDescription         = findViewById(R.id.etDescription)
+        btnSubmit             = findViewById(R.id.btnSubmit)
+        btnBack               = findViewById(R.id.btnBack)
+        frameRoomImage        = findViewById(R.id.frameRoomImage)
+        ivRoomImagePreview    = findViewById(R.id.ivRoomImagePreview)
+        layoutImagePlaceholder = findViewById(R.id.layoutImagePlaceholder)
+
+        frameRoomImage.setOnClickListener { pickImageLauncher.launch("image/*") }
 
         // Nhận dữ liệu Intent để check chế độ Thêm hay Sửa
         roomId = intent.getIntExtra("ROOM_ID", -1)
@@ -161,11 +189,17 @@ class AddRoomActivity : AppCompatActivity() {
                     RetrofitClient.api.createRoom(token, requestBody)
                 }
 
-                if (response.isSuccessful) {
-                    val msg = if (isEditMode) "Cập nhật phòng thành công!" else "Thêm phòng mới thành công!"
-                    Toast.makeText(this@AddRoomActivity, msg, Toast.LENGTH_SHORT).show()
-                    setResult(RESULT_OK) // Báo về OwnerMainActivity để reload danh sách
-                    finish()
+                if (response.isSuccessful && response.body() != null) {
+                    val createdRoomId = response.body()!!.id
+                    val uri = selectedImageUri
+                    if (uri != null) {
+                        uploadRoomImage(createdRoomId, uri)
+                    } else {
+                        val msg = if (isEditMode) "Cập nhật phòng thành công!" else "Thêm phòng mới thành công!"
+                        Toast.makeText(this@AddRoomActivity, msg, Toast.LENGTH_SHORT).show()
+                        setResult(RESULT_OK)
+                        finish()
+                    }
                 } else {
                     if (response.code() == 401) {
                         Toast.makeText(
@@ -191,5 +225,28 @@ class AddRoomActivity : AppCompatActivity() {
                 btnSubmit.text = if (isEditMode) "CẬP NHẬT" else "TẠO PHÒNG"
             }
         }
+    }
+
+    private fun uploadRoomImage(targetRoomId: Int, uri: Uri) {
+        lifecycleScope.launch {
+            try {
+                val bytes = contentResolver.openInputStream(uri)?.readBytes() ?: run {
+                    finishSuccess()
+                    return@launch
+                }
+                val mimeType = contentResolver.getType(uri) ?: "image/jpeg"
+                val requestBody = bytes.toRequestBody(mimeType.toMediaTypeOrNull())
+                val part = MultipartBody.Part.createFormData("room_image", "room_image.jpg", requestBody)
+                RetrofitClient.api.uploadRoomImage(session.bearerToken(), targetRoomId, part)
+            } catch (_: Exception) { }
+            finishSuccess()
+        }
+    }
+
+    private fun finishSuccess() {
+        val msg = if (isEditMode) "Cập nhật phòng thành công!" else "Thêm phòng mới thành công!"
+        Toast.makeText(this@AddRoomActivity, msg, Toast.LENGTH_SHORT).show()
+        setResult(RESULT_OK)
+        finish()
     }
 }
