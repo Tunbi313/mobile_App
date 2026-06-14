@@ -22,6 +22,7 @@
             android:layout_height="160dp">
 
             <ImageView
+                android:id="@+id/ivRoomImage"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:src="@drawable/ic_house"

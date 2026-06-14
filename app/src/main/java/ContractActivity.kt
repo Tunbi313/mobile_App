@@ -8,6 +8,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import com.bumptech.glide.Glide
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -23,16 +24,18 @@ class ContractActivity : AppCompatActivity() {
 
         tokenManager = TokenManager(this)
 
-        val btnBack     = findViewById<ImageView>(R.id.btnBack)
-        val fabDownload = findViewById<CardView>(R.id.fabDownload)
-        val tvSignDate   = findViewById<TextView>(R.id.tvSignDate)
-        val tvDuration   = findViewById<TextView>(R.id.tvDuration)
-        val tvLandlordName = findViewById<TextView>(R.id.tvLandlordName)
-        val tvTenantName   = findViewById<TextView>(R.id.tvTenantName)
-        val navHome      = findViewById<LinearLayout>(R.id.navHome)
-        val navContract  = findViewById<LinearLayout>(R.id.navContract)
-        val navNotify    = findViewById<LinearLayout>(R.id.navNotify)
-        val navSettings  = findViewById<LinearLayout>(R.id.navSettings)
+        val btnBack          = findViewById<ImageView>(R.id.btnBack)
+        val fabDownload      = findViewById<CardView>(R.id.fabDownload)
+        val tvContractTitle  = findViewById<TextView>(R.id.tvContractTitle)
+        val tvSignDate       = findViewById<TextView>(R.id.tvSignDate)
+        val tvDuration       = findViewById<TextView>(R.id.tvDuration)
+        val tvLandlordName   = findViewById<TextView>(R.id.tvLandlordName)
+        val tvTenantName     = findViewById<TextView>(R.id.tvTenantName)
+        val ivContractImage  = findViewById<ImageView>(R.id.ivContractImage)
+        val navHome          = findViewById<LinearLayout>(R.id.navHome)
+        val navContract      = findViewById<LinearLayout>(R.id.navContract)
+        val navNotify        = findViewById<LinearLayout>(R.id.navNotify)
+        val navSettings      = findViewById<LinearLayout>(R.id.navSettings)
 
         btnBack.setOnClickListener { finish() }
 
@@ -40,7 +43,7 @@ class ContractActivity : AppCompatActivity() {
             Toast.makeText(this, "Tính năng tải PDF đang phát triển", Toast.LENGTH_SHORT).show()
         }
 
-        loadContract(tvSignDate, tvDuration, tvLandlordName, tvTenantName)
+        loadContract(tvContractTitle, tvSignDate, tvDuration, tvLandlordName, tvTenantName, ivContractImage)
 
         navHome.setOnClickListener {
             startActivity(Intent(this, TenantMainActivity::class.java)); finish()
@@ -55,17 +58,26 @@ class ContractActivity : AppCompatActivity() {
     }
 
     private fun loadContract(
-        tvDate: TextView, tvDuration: TextView,
-        tvLandlord: TextView, tvTenant: TextView
+        tvTitle: TextView, tvDate: TextView, tvDuration: TextView,
+        tvLandlord: TextView, tvTenant: TextView, ivImage: ImageView
     ) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val contract = RetrofitClient.instance.getTenantContract(tokenManager.getBearer())
                 withContext(Dispatchers.Main) {
+                    tvTitle.text    = "Hợp đồng thuê phòng ${contract.room_name}"
                     tvDate.text     = contract.move_in
                     tvDuration.text = "${contract.duration_months} tháng"
                     tvLandlord.text = contract.landlord_name ?: "Chủ nhà"
                     tvTenant.text   = contract.tenant_name ?: tokenManager.getUsername() ?: "Khách thuê"
+
+                    if (!contract.contract_image_url.isNullOrEmpty()) {
+                        Glide.with(this@ContractActivity)
+                            .load(contract.contract_image_url)
+                            .placeholder(R.drawable.ic_house)
+                            .error(R.drawable.ic_house)
+                            .into(ivImage)
+                    }
                 }
             } catch (e: retrofit2.HttpException) {
                 withContext(Dispatchers.Main) {

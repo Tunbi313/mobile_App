@@ -5,6 +5,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import okhttp3.MultipartBody
 import retrofit2.http.*
 
 // ════════════════════════════════════════════════════════════════
@@ -17,7 +18,8 @@ data class LoginRequest(val username: String, val password: String)
 data class UserData(
     val id: Int, val username: String, val email: String,
     val phone: String?, val full_name: String?, val id_card: String?,
-    val is_owner: Boolean
+    val is_owner: Boolean,
+    val avatar_url: String?
 )
 
 data class LoginResponse(val user: UserData, val access: String, val refresh: String)
@@ -30,6 +32,8 @@ data class UpdateProfileRequest(
     val id_card: String? = null,
     val password: String? = null
 )
+
+data class LogoutRequest(val refresh: String)
 
 // ════════════════════════════════════════════════════════════════
 //  ROOM DATA CLASSES
@@ -48,7 +52,8 @@ data class RoomData(
     val tenant_name: String?,
     val tenant_phone: String?,
     val move_in: String?,
-    val deposit: String?
+    val deposit: String?,
+    val room_image_url: String?
 )
 
 data class LandlordData(val full_name: String?, val phone: String?, val email: String?)
@@ -71,7 +76,8 @@ data class ContractData(
     val duration_months: Int,
     val is_active: Boolean,
     val landlord_name: String?,
-    val tenant_name: String?
+    val tenant_name: String?,
+    val contract_image_url: String?
 )
 
 // ════════════════════════════════════════════════════════════════
@@ -93,9 +99,12 @@ data class InvoiceData(
     val total_water: String,
     val grand_total: String,
     val is_paid: Boolean,
+    val payment_status: String = "none",
     val created_at: String?,
     val updated_at: String?
 )
+
+data class SubmitPaymentResponse(val message: String)
 
 data class InvoiceHistoryData(
     val id: Int,
@@ -149,6 +158,19 @@ interface ApiService {
         @Body body: UpdateProfileRequest
     ): UserData
 
+    @POST("auth/logout/")
+    suspend fun logout(
+        @Header("Authorization") token: String,
+        @Body body: LogoutRequest
+    ): Map<String, String>
+
+    @Multipart
+    @POST("auth/profile/avatar/")
+    suspend fun uploadAvatar(
+        @Header("Authorization") token: String,
+        @Part avatar: MultipartBody.Part
+    ): UserData
+
     // ── Rooms ─────────────────────────────────────────────────
     @GET("api/rooms/available/")
     suspend fun getAvailableRooms(@Header("Authorization") token: String): List<RoomData>
@@ -172,6 +194,14 @@ interface ApiService {
     @GET("api/invoices/current-unpaid/")
     suspend fun getCurrentUnpaidInvoice(@Header("Authorization") token: String): CurrentUnpaidResponse
 
+    @Multipart
+    @POST("api/invoices/{invoice_id}/submit-payment/")
+    suspend fun submitPaymentProof(
+        @Header("Authorization") token: String,
+        @Path("invoice_id") invoiceId: Int,
+        @Part proof: MultipartBody.Part
+    ): SubmitPaymentResponse
+
     // ── Notifications ─────────────────────────────────────────
     @GET("api/notifications/")
     suspend fun getNotifications(@Header("Authorization") token: String): List<NotificationData>
@@ -192,7 +222,7 @@ interface ApiService {
 
 object RetrofitClient {
     // Emulator: 10.0.2.2 = host localhost. Real device: dùng IP WiFi của máy host
-    private const val BASE_URL = "http://10.0.2.2:8000/"
+    private const val BASE_URL = "http://192.168.1.73:8000/"
     // private const val BASE_URL = "http://192.168.88.132:8000/"
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
@@ -222,18 +252,20 @@ object RetrofitClient {
 class TokenManager(context: Context) {
     private val prefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
 
-    fun saveToken(token: String) = prefs.edit().putString("access_token", token).apply()
-    fun getToken(): String?       = prefs.getString("access_token", null)
-    fun clearToken()              = prefs.edit().clear().apply()
-    fun getBearer(): String       = "Bearer ${getToken()}"
+    fun saveToken(token: String)        = prefs.edit().putString("access_token", token).apply()
+    fun getToken(): String?             = prefs.getString("access_token", null)
+    fun saveRefreshToken(token: String) = prefs.edit().putString("refresh_token", token).apply()
+    fun getRefreshToken(): String?      = prefs.getString("refresh_token", null)
+    fun clearToken()                    = prefs.edit().clear().apply()
+    fun getBearer(): String             = "Bearer ${getToken()}"
 
     fun saveHasRoom(hasRoom: Boolean) = prefs.edit().putBoolean("has_room", hasRoom).apply()
     fun hasRoom(): Boolean            = prefs.getBoolean("has_room", false)
 
-    fun saveUserId(id: Int)    = prefs.edit().putInt("user_id", id).apply()
-    fun getUserId(): Int       = prefs.getInt("user_id", -1)
-    fun saveUsername(u: String) = prefs.edit().putString("username", u).apply()
-    fun getUsername(): String? = prefs.getString("username", null)
+    fun saveUserId(id: Int)          = prefs.edit().putInt("user_id", id).apply()
+    fun getUserId(): Int             = prefs.getInt("user_id", -1)
+    fun saveUsername(u: String)      = prefs.edit().putString("username", u).apply()
+    fun getUsername(): String?       = prefs.getString("username", null)
 }
 
 // ════════════════════════════════════════════════════════════════

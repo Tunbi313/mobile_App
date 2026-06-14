@@ -24,6 +24,30 @@ class RoomListingActivity : AppCompatActivity() {
     private lateinit var adapter: RoomAdapter
     private var allRooms = listOf<RoomData>()
 
+    override fun onResume() {
+        super.onResume()
+        checkIfAssignedRoom()
+    }
+
+    private fun checkIfAssignedRoom() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                RetrofitClient.instance.getTenantDashboard(tokenManager.getBearer())
+                withContext(Dispatchers.Main) {
+                    tokenManager.saveHasRoom(true)
+                    startActivity(Intent(this@RoomListingActivity, TenantMainActivity::class.java).apply {
+                        flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    })
+                    finish()
+                }
+            } catch (e: retrofit2.HttpException) {
+                // 404 = chưa có phòng, ở lại đây
+            } catch (e: Exception) {
+                // Lỗi kết nối, bỏ qua
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_room_listing)
@@ -128,7 +152,7 @@ class RoomListingActivity : AppCompatActivity() {
             startActivity(Intent(Intent.ACTION_SENDTO).apply { data = Uri.parse("smsto:0901234567") })
         }
 
-        navHome.setOnClickListener { /* Already here */ }
+        navHome.setOnClickListener { checkIfAssignedRoom() }
         navManage.setOnClickListener {
             Toast.makeText(this, "Bạn chưa thuê phòng nào", Toast.LENGTH_SHORT).show()
         }

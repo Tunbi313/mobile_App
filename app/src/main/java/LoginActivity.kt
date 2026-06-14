@@ -67,6 +67,7 @@ class LoginActivity : AppCompatActivity() {
                     withContext(Dispatchers.Main) {
                         val tm = TokenManager(this@LoginActivity)
                         tm.saveToken(response.access)
+                        tm.saveRefreshToken(response.refresh)
                         tm.saveUsername(response.user.username)
                         tm.saveUserId(response.user.id)
                         // is_owner → go to TenantMainActivity anyway; it redirects if no room

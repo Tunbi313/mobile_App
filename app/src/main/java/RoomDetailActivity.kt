@@ -4,10 +4,12 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
+import com.bumptech.glide.Glide
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -32,6 +34,7 @@ class RoomDetailActivity : AppCompatActivity() {
         val tvArea     = findViewById<TextView>(R.id.tvArea)
         val tvCapacity = findViewById<TextView>(R.id.tvCapacity)
         val tvFloor    = findViewById<TextView>(R.id.tvFloor)
+        val ivRoomimage = findViewById<ImageView>(R.id.ivRoomImage)
 
         // Data passed via Intent from RoomListingActivity
         val roomId      = intent.getIntExtra("room_id", -1)
@@ -42,6 +45,7 @@ class RoomDetailActivity : AppCompatActivity() {
         val floorStr    = intent.getStringExtra("floor")    ?: ""
         val amenities   = intent.getStringExtra("amenities") ?: ""
         val description = intent.getStringExtra("description") ?: ""
+
 
         // Populate from Intent (fast)
         tvRoomName.text = roomName
@@ -64,6 +68,12 @@ class RoomDetailActivity : AppCompatActivity() {
                         tvCapacity.text = "${room.capacity ?: 2} người"
                         tvFloor.text    = room.floor ?: ""
                         // Landlord phone not in room detail for non-tenants; keep default
+
+                        Glide.with(this@RoomDetailActivity)
+                            .load(room.room_image_url)
+                            .placeholder(R.drawable.ic_house)
+                            .error(R.drawable.ic_house)
+                            .into(ivRoomimage)
                     }
                 } catch (_: Exception) {
                     // Silently keep Intent data on error

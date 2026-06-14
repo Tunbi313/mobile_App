@@ -34,12 +34,12 @@
                     android:id="@+id/ivAvatar"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
-                    android:background="@drawable/img_6"
                     android:contentDescription="Avatar"
                     android:padding="8dp"
                     />
 
                 <TextView
+                    android:id="@+id/tvHeaderName"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
@@ -194,10 +194,11 @@
 
         <!-- Lời chào -->
         <TextView
+            android:id="@+id/tvGreeting"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="4dp"
-            android:text="Xin chào, Nguyễn Văn A"
+            android:text="Xin chào, ..."
             android:textColor="@color/text_primary"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -521,6 +522,7 @@
                         app:cardElevation="0dp">
 
                         <TextView
+                            android:id="@+id/tvLandlordInitial"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:gravity="center"
